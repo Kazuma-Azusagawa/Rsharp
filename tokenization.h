@@ -6,34 +6,36 @@
 
 using namespace std;
 
-//VSE VRSTE TOKENOV
+//Vse vrste tokenov
 enum class TokenType {
     exit,
     integer,
     semi
 };
 
-//TOKEN
+//Struktura tokena
 struct Token{
     TokenType type;
     optional<string> value {};
 };
 
+
+
 class Tokenizer{
 public:
     inline Tokenizer(const string& src)
-        : m_src(move(src))
+        : m_src(move(src)) // da string v m_src
     {        
     }
 
     inline vector<Token> tokenize(){
 
-        vector<Token> tokens;
-        string buffer;
+        vector<Token> tokens; // Vektor tokeno
+        string buffer; // Buffer za vrednosti ki bodo dane v token
 
         while(peak().has_value()){
-            if(isalpha(peak().value())){
-                buffer.push_back(consume());
+            if(isalpha(peak().value())){ // Pregled za text zazaj samo pregleda ce pise "exit"
+                buffer.push_back(consume()); 
                 while(peak().has_value() && isalpha(peak().value())){
                     buffer.push_back(consume());
                 }
@@ -42,11 +44,11 @@ public:
                     buffer.clear();
                     continue;
                 } else {
-                    cerr << "ERROR!\n";
+                    cerr << "ERROR!\n"; // Ce neje pise "exit" vrne ERROR
                     exit(EXIT_FAILURE);                  
                 }
             }
-            else if(isdigit(peak().value())){
+            else if(isdigit(peak().value())){ // Pregled za stevilke
                 buffer.push_back(consume());
                 while(peak().has_value() && isdigit(peak().value())){
                     buffer.push_back(consume());
@@ -55,15 +57,15 @@ public:
                 buffer.clear();
                 
             }
-            else if(peak().value() == ';'){
+            else if(peak().value() == ';'){ // Pregled za podpicje
                 consume();
                 tokens.push_back({.type = TokenType::semi,});
             }
-            else if(isspace(peak().value())){
+            else if(isspace(peak().value())){ //space bar / drugi whitespace 
                 consume();
                 continue;
             }
-            else{
+            else{ // Ce nima vrednosti vrne ERROR
                 cerr << "ERROR!\n";
                 exit(EXIT_FAILURE);
             }
@@ -74,18 +76,18 @@ public:
 
 
 private:
-
-    [[nodiscard]] optional<char> peak(int x = 1) const 
+    // Pogleda kje smo v stringu
+    [[nodiscard]] optional<char> peak(int x = 1) const  
     {
-        if(m_index + x > m_src.length()){
-            return {};
+        if(m_index + x > m_src.length()){ // Ce smo na koncu vrene NULL
+            return {}; 
         }
-        else{
+        else{ // Drugace vrne trenutni znak
             return m_src.at(m_index);
         }
     }
 
-    char consume(){
+    char consume(){ // Vrne trenutni znak in indexu doda 1
         return m_src.at(m_index++);
     }
 
