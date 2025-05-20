@@ -21,6 +21,7 @@ string tokens_to_asm(const vector<Token>& tokens){
     return out.str();
 }
 
+// Main ----------------------------------------------------------------
 
 int main(int argc , char * argv[]){
 
@@ -43,7 +44,7 @@ int main(int argc , char * argv[]){
         fstream file("out.asm" , ios::out); 
         file << tokens_to_asm(tokens); // turns tokens to asm and puts them into out.asm
     }
-
+    // Linux Commands ---------------------------------------------------
     system("nasm -felf64 out.asm"); // turns .asm file into .o file
     system("ld -o out out.o"); //turns .o file into executable
     
