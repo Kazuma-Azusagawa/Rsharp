@@ -1,2 +1,2 @@
 # Rsharp
-Compiler in the works
+Simple compiler that can only compile exit statements for now
