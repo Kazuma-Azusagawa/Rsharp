@@ -1,4 +1,8 @@
 #include <fstream>
+#include <sstream>
+#include <iostream>
+#include <optional>
+#include <vector>
 #include "./tokenization.h"
 
 //Prevede tokene v asm codo---------------------------------------------------------------------------------------------------------------------------
