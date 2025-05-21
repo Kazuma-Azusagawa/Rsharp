@@ -30,7 +30,7 @@ string tokens_to_asm(const vector<Token>& tokens){
 int main(int argc , char * argv[]){
 
     if (argc != 2){ //Ends program if no arg is given
-        cerr << "No file to compile \n Example 'rsharp <input.rsh>'\n";
+        cerr << "No file to compile \n Example 'roxy <input.rsh> /*<output>*/'\n";
         exit(EXIT_FAILURE);
     }
 
