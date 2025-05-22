@@ -20,7 +20,7 @@ struct Token{
 };
 
 
-
+// spremeni podan string v tokene
 class Tokenizer{
 public:
     inline Tokenizer(const string& src)
