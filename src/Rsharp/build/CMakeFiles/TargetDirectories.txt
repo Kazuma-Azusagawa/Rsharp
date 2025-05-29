@@ -1,0 +1,3 @@
+/home/azz/Rsharp/build/CMakeFiles/roxy.dir
+/home/azz/Rsharp/build/CMakeFiles/edit_cache.dir
+/home/azz/Rsharp/build/CMakeFiles/rebuild_cache.dir
