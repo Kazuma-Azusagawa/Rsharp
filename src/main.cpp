@@ -3,29 +3,35 @@
 #include <iostream>
 #include <optional>
 #include <vector>
-#include "./tokenization.h"
+#include "./tokenization.hpp"
+#include "./parsing.hpp"
+#include "./generation.hpp"
 
-//Prevede tokene v asm codo---------------------------------------------------------------------------------------------------------------------------
-//asm. syscall sheat: https://chromium.googlesource.com/chromiumos/docs/+/master/constants/syscalls.md
-string tokens_to_asm(const vector<Token>& tokens){
-    stringstream out; 
-    out << "global _start\n_start:\n"; //naredi start funkcijo in jo naredi dostopno do cpuja
-    for(int i = 0; i < tokens.size() ;i++){
-        const Token& token = tokens.at(i);
-        if (token.type == TokenType::exit){ // pregleda ce ima exit token
-            if (i + 1 < tokens.size() && tokens.at(i + 1).type == TokenType::integer){ // pregleda ce ima int token
-                if (i + 2 < tokens.size() && tokens.at(i + 2).type == TokenType::semi){ // pregleda ce ima podpicje token
-                    out << "    mov rax, 60\n"; 
-                    out << "    mov rdi, " << tokens.at(i + 1).value.value() << endl;
-                    out << "    syscall";
-                }
-            }
-        }
-    }
-    return out.str();
-}
+/*
 
-// Main ----------------------------------------------------------------
+  RRRRRRRRRRRRRRRRR                                                               
+  R::::::::::::::::R                                                               
+  R::::::RRRRRR:::::R                                                             
+  RR:::::R     R:::::R                                                            
+    R::::R     R:::::R   ooooooooooo xxxxxxx      xxxxxxxyyyyyyy           yyyyyyy
+    R::::R     R:::::R oo:::::::::::oox:::::x    x:::::x  y:::::y         y:::::y 
+    R::::RRRRRR:::::R o:::::::::::::::ox:::::x  x:::::x    y:::::y       y:::::y  
+    R:::::::::::::RR  o:::::ooooo:::::o x:::::xx:::::x      y:::::y     y:::::y   
+    R::::RRRRRR:::::R o::::o     o::::o  x::::::::::x        y:::::y   y:::::y    
+    R::::R     R:::::Ro::::o     o::::o   x::::::::x          y:::::y y:::::y     
+    R::::R     R:::::Ro::::o     o::::o   x::::::::x           y:::::y:::::y      
+    R::::R     R:::::Ro::::o     o::::o  x::::::::::x           y:::::::::y       
+  RR:::::R     R:::::Ro:::::ooooo:::::o x:::::xx:::::x           y:::::::y        
+  R::::::R     R:::::Ro:::::::::::::::ox:::::x  x:::::x           y:::::y         
+  R::::::R     R:::::R oo:::::::::::oox:::::x    x:::::x         y:::::y          
+  RRRRRRRR     RRRRRRR   ooooooooooo xxxxxxx      xxxxxxx       y:::::y           
+                                                               y:::::y            
+                                                              y:::::y             
+                                                             y:::::y              
+                                                            y:::::y               
+                                                           yyyyyyy     
+
+*/
 
 int main(int argc , char * argv[]){
 
@@ -44,9 +50,20 @@ int main(int argc , char * argv[]){
 
     Tokenizer tokenizer(move(contents)); //purt the string into the tokenizer
     vector<Token> tokens = tokenizer.tokenize(); // Turns the string int a vector of tokens
+    
+    Parser parser(move(tokens));
+    optional<N_Exit> tree = parser.parse();
+
+    if(!tree.has_value()){
+        cerr << "Naredil si retard napako\n";
+        exit(EXIT_FAILURE);
+    }
+    
+    Generator generator(tree.value());
+
     {
         fstream file("out.asm" , ios::out); 
-        file << tokens_to_asm(tokens); // turns tokens to asm and puts them into out.asm
+        file << generator.generate();// turns tokens to asm and puts them into out.asm
     }
     // Linux Commands ---------------------------------------------------
     system("nasm -felf64 out.asm"); // turns .asm file into .o file
